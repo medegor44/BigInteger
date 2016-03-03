@@ -21,8 +21,10 @@ BigInteger BigInteger::operator +(BigInteger another)
             res.sign = -1;
             return res;
         }
-    } else
-        return tmpInt - abs(another);
+    } else {
+        if (another.sign < 0)
+            return tmpInt - abs(another);
+    }
 
     if (another > tmpInt)
         swap(another, tmpInt);

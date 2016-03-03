@@ -20,7 +20,6 @@ public:
     BigInteger operator -(BigInteger another);
     BigInteger operator =(const BigInteger &another);
 
-
     bool operator == (BigInteger &another);
     bool operator != (BigInteger &another);
     bool operator > (BigInteger &another);
