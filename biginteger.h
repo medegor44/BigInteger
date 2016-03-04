@@ -18,6 +18,7 @@ public:
     BigInteger operator *(int n);
     BigInteger operator +(BigInteger another);
     BigInteger operator -(BigInteger another);
+    BigInteger operator -(int n);
     BigInteger operator =(const BigInteger &another);
 
     bool operator == (BigInteger &another);

@@ -6,11 +6,12 @@ using namespace std;
 
 int main()
 {
-    BigInteger a(1), b, c;
+    BigInteger a;
+    int n;
 
-    cin >> a >> c;
+    cin >> a >> n;
 
-    a = a + c;
+    a = a + n;
     cout << a;
 
     return 0;

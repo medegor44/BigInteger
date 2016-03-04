@@ -5,7 +5,7 @@
 
 BigInteger::BigInteger(int n)
 {
-    sign = 1;
+    sign = (n == 0 ? 1 : n / abs(n));
     number.push_back(labs(n));
 }
 
@@ -29,8 +29,16 @@ BigInteger BigInteger::operator +(BigInteger another)
     if (another > tmpInt)
         swap(another, tmpInt);
 
-    for (int64 i = 0; i < another.number.size(); i++)
-        tmpInt.addShort(another.number[i], i);
+//    for (int64 i = 0; i < another.number.size(); i++)
+//        tmpInt.addShort(another.number[i], i);
+
+    int64 carrige = 0;
+    for (int64 i = 0; i < another.number.size() || carrige; i++) {
+        tmpInt.number[i] +=
+                ((i < another.number.size() ? another.number[i] : 0) + carrige);
+        carrige = tmpInt.number[i] / base;
+        tmpInt.number[i] %= base;
+    }
 
     return tmpInt;
 }
@@ -100,9 +108,11 @@ void BigInteger::addShort(int64 n, int startPos)
 BigInteger BigInteger::operator +(int n)
 {
     BigInteger tmpInt = *this;
-    tmpInt.addShort(n);
+//    tmpInt.addShort(n);
 
-    return tmpInt;
+
+
+    return tmpInt + BigInteger(n);
 }
 
 void BigInteger::mulShort(int64 n, int startPos)
@@ -173,6 +183,11 @@ BigInteger BigInteger::operator -(BigInteger another)
     return tmpInt;
 }
 
+BigInteger BigInteger::operator -(int n)
+{
+    return (*this) - BigInteger(n);
+}
+
 ostream &operator <<(ostream &stream, BigInteger &bigInt)
 {
     int64 len = bigInt.number.size();
@@ -212,7 +227,7 @@ istream &operator >>(istream &stream, BigInteger &bigInt)
             continue;
         }
 
-        bigInt = bigInt * 10 + (c - '0');
+        bigInt = bigInt * 10 + (bigInt.sign * (c - '0'));
         readNumbers = true;
     }
 
