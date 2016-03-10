@@ -81,7 +81,7 @@ bool BigInteger::operator <=(BigInteger &another)
     return !(*this > another);
 }
 
-pair<BigInteger, int> BigInteger::div(int n)
+pair<BigInteger, int> BigInteger::divShort(int n)
 {
     assert(n != 0);
 
@@ -105,6 +105,27 @@ pair<BigInteger, int> BigInteger::div(int n)
         tmpInt.number.pop_back();
 
     return make_pair(tmpInt, r);
+}
+
+pair<BigInteger, BigInteger> BigInteger::divBig(BigInteger b)
+{
+    if (this->number[0] == 0 && this->number.size() == 1) {
+        BigInteger x(0), y(0);
+        return make_pair(x, y);
+    }
+
+    BigInteger a = *this;
+    a = a / 2;
+    auto p = a.divBig(b);
+
+    if (a.number[0] % 2 == 0)
+        p.second++;
+    if (p.second > b) {
+        p.second = p.second - b;
+        p.first++;
+    }
+
+    return p;
 }
 
 bool BigInteger::operator <(BigInteger &another)
@@ -216,14 +237,22 @@ BigInteger BigInteger::operator -(int n)
 
 BigInteger BigInteger::operator /(int n)
 {
-    auto res = div(n);
+    auto res = divShort(n);
     return res.first;
+}
+
+BigInteger BigInteger::operator /(BigInteger n)
+{
+    BigInteger tmpInt = *this;
+    auto p = tmpInt.divBig(n);
+
+    return p.first;
 }
 
 BigInteger BigInteger::operator %(int n)
 {
     int restSign = sign;
-    auto p = div(n);
+    auto p = divShort(n);
 
     return restSign * p.second;
 }
