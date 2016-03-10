@@ -81,6 +81,32 @@ bool BigInteger::operator <=(BigInteger &another)
     return !(*this > another);
 }
 
+pair<BigInteger, int> BigInteger::div(int n)
+{
+    assert(n != 0);
+
+    BigInteger tmpInt = *this;
+
+    int sign = tmpInt.sign * (n / abs(n));
+    n = abs(n);
+    tmpInt = abs(tmpInt);
+
+    unsigned long long r = 0;
+
+    for (int64 i = (int64)tmpInt.number.size() - 1; i >= 0; i--) {
+        r = r * base + tmpInt.number[i];
+        tmpInt.number[i] = r / n;
+        r %= n;
+    }
+
+    tmpInt.sign = sign;
+
+    while (tmpInt.number.size() > 1 && tmpInt.number.back() == 0)
+        tmpInt.number.pop_back();
+
+    return make_pair(tmpInt, r);
+}
+
 bool BigInteger::operator <(BigInteger &another)
 {
     return *this <= another && *this != another;
@@ -186,6 +212,48 @@ BigInteger BigInteger::operator -(BigInteger another)
 BigInteger BigInteger::operator -(int n)
 {
     return (*this) - BigInteger(n);
+}
+
+BigInteger BigInteger::operator /(int n)
+{
+    auto res = div(n);
+    return res.first;
+}
+
+BigInteger BigInteger::operator %(int n)
+{
+    int restSign = sign;
+    auto p = div(n);
+
+    return restSign * p.second;
+}
+
+BigInteger BigInteger::operator--()
+{
+    (*this) = (*this) - 1;
+    return *this;
+}
+
+BigInteger BigInteger::operator++()
+{
+    (*this) = (*this) + 1;
+    return *this;
+}
+
+BigInteger BigInteger::operator--(int)
+{
+    BigInteger tmp = *this;
+    (*this) = (*this) - 1;
+
+    return tmp;
+}
+
+BigInteger BigInteger::operator++(int)
+{
+    BigInteger tmp = *this;
+    (*this) = (*this) + 1;
+
+    return tmp;
 }
 
 ostream &operator <<(ostream &stream, BigInteger &bigInt)

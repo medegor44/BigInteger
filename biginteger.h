@@ -5,6 +5,8 @@
 #include <cmath>
 #include <ostream>
 #include <istream>
+#include <utility>
+#include <cassert>
 
 using namespace std;
 
@@ -14,11 +16,24 @@ class BigInteger
 {
 public:
     BigInteger(int n = 0);
-    BigInteger operator +(int n);
+
     BigInteger operator *(int n);
+
     BigInteger operator +(BigInteger another);
+    BigInteger operator +(int n);
+
     BigInteger operator -(BigInteger another);
     BigInteger operator -(int n);
+
+    BigInteger operator /(int n);
+    BigInteger operator %(int n);
+
+    BigInteger operator--(); // Префиксный
+    BigInteger operator++();
+
+    BigInteger operator--(int); // Постфиксный
+    BigInteger operator++(int);
+
     BigInteger operator =(const BigInteger &another);
 
     bool operator == (BigInteger &another);
@@ -33,6 +48,7 @@ public:
     friend BigInteger abs(BigInteger bigInt);
 
 private:
+    pair<BigInteger, int> div(int n);
     void addShort(int64 n, int startPos = 0);
     void mulShort(int64 n, int startPos = 0);
     const int64 base = 10000000000;
