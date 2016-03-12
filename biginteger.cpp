@@ -64,7 +64,7 @@ bool BigInteger::operator >(BigInteger &another)
     if (this->number.size() != another.number.size())
         return (this->sign > 0) == (this->number.size() > another.number.size());
 
-    for (int64 i = 0; i < number.size(); i++)
+    for (int64 i = (int64)number.size() - 1; i >= 0; i--)
         if (this->number[i] != another.number[i])
             return (this->sign > 0) == (this->number[i] > another.number[i]);
 
@@ -81,51 +81,30 @@ bool BigInteger::operator <=(BigInteger &another)
     return !(*this > another);
 }
 
-pair<BigInteger, int> BigInteger::divShort(int n)
+int BigInteger::divShort(int n)
 {
     assert(n != 0);
 
-    BigInteger tmpInt = *this;
+    int sign = this->sign * (n / abs(n));
+    int oldSign = this->sign;
 
-    int sign = tmpInt.sign * (n / abs(n));
     n = abs(n);
-    tmpInt = abs(tmpInt);
+    this->sign = 1;
 
     unsigned long long r = 0;
 
-    for (int64 i = (int64)tmpInt.number.size() - 1; i >= 0; i--) {
-        r = r * base + tmpInt.number[i];
-        tmpInt.number[i] = r / n;
+    for (int64 i = number.size() - 1; i >= 0; i--) {
+        r = r * base + number[i];
+        number[i] = r / n;
         r %= n;
     }
 
-    tmpInt.sign = sign;
+    this->sign = sign;
 
-    while (tmpInt.number.size() > 1 && tmpInt.number.back() == 0)
-        tmpInt.number.pop_back();
+    while (number.size() > 1 && number.back() == 0)
+        number.pop_back();
 
-    return make_pair(tmpInt, r);
-}
-
-pair<BigInteger, BigInteger> BigInteger::divBig(BigInteger b)
-{
-    if (this->number[0] == 0 && this->number.size() == 1) {
-        BigInteger x(0), y(0);
-        return make_pair(x, y);
-    }
-
-    BigInteger a = *this;
-    a = a / 2;
-    auto p = a.divBig(b);
-
-    if (a.number[0] % 2 == 0)
-        p.second++;
-    if (p.second > b) {
-        p.second = p.second - b;
-        p.first++;
-    }
-
-    return p;
+    return r * oldSign;
 }
 
 bool BigInteger::operator <(BigInteger &another)
@@ -155,9 +134,6 @@ void BigInteger::addShort(int64 n, int startPos)
 BigInteger BigInteger::operator +(int n)
 {
     BigInteger tmpInt = *this;
-//    tmpInt.addShort(n);
-
-
 
     return tmpInt + BigInteger(n);
 }
@@ -237,24 +213,15 @@ BigInteger BigInteger::operator -(int n)
 
 BigInteger BigInteger::operator /(int n)
 {
-    auto res = divShort(n);
-    return res.first;
-}
-
-BigInteger BigInteger::operator /(BigInteger n)
-{
-    BigInteger tmpInt = *this;
-    auto p = tmpInt.divBig(n);
-
-    return p.first;
+    auto tmpInt = *this;
+    tmpInt.divShort(n);
+    return tmpInt;
 }
 
 BigInteger BigInteger::operator %(int n)
 {
-    int restSign = sign;
-    auto p = divShort(n);
-
-    return restSign * p.second;
+    auto tmpInt = *this;
+    return tmpInt.divShort(n);
 }
 
 BigInteger BigInteger::operator--()

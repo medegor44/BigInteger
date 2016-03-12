@@ -26,7 +26,6 @@ public:
     BigInteger operator -(int n);
 
     BigInteger operator /(int n);
-    BigInteger operator /(BigInteger n);
     BigInteger operator %(int n);
 
     BigInteger operator--(); // Префиксный
@@ -49,8 +48,7 @@ public:
     friend BigInteger abs(BigInteger bigInt);
 
 private:
-    pair<BigInteger, int> divShort(int n);
-    pair<BigInteger, BigInteger> divBig(BigInteger b);
+    int divShort(int n);
     void addShort(int64 n, int startPos = 0);
     void mulShort(int64 n, int startPos = 0);
     const int64 base = 10000000000;

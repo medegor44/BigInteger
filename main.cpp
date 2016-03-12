@@ -10,10 +10,7 @@ int main()
 
     cin >> a >> b;
 
-    auto c = a / b;
-
-    cout << c;
-
+    cout << (a > b);
 
     return 0;
 }
