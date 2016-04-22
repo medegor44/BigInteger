@@ -7,6 +7,7 @@
 #include <istream>
 #include <utility>
 #include <cassert>
+#include <utility>
 
 using namespace std;
 
@@ -17,16 +18,18 @@ class BigInteger
 public:
     BigInteger(int n = 0);
 
-    BigInteger operator *(int n);
+    BigInteger operator *(int64_t n);
 
     BigInteger operator +(BigInteger another);
-    BigInteger operator +(int n);
+    BigInteger operator +(int64_t n);
 
     BigInteger operator -(BigInteger another);
-    BigInteger operator -(int n);
+    BigInteger operator -(int64_t n);
 
-    BigInteger operator /(int n);
-    BigInteger operator %(int n);
+    BigInteger operator /(int64_t n);
+    BigInteger operator %(int64_t n);
+    BigInteger operator /(BigInteger another);
+    BigInteger operator %(BigInteger another);
 
     BigInteger operator--(); // Префиксный
     BigInteger operator++();
@@ -48,9 +51,10 @@ public:
     friend BigInteger abs(BigInteger bigInt);
 
 private:
-    int divShort(int n);
+    int divShort(int64_t n);
     void addShort(int64 n, int startPos = 0);
     void mulShort(int64 n, int startPos = 0);
+    pair<BigInteger, BigInteger> divBig(BigInteger another);
     const int64 base = 10000000000;
     int sign;
     vector<int64> number;

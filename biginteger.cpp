@@ -81,7 +81,7 @@ bool BigInteger::operator <=(BigInteger &another)
     return !(*this > another);
 }
 
-int BigInteger::divShort(int n)
+int BigInteger::divShort(int64_t n)
 {
     assert(n != 0);
 
@@ -131,14 +131,48 @@ void BigInteger::addShort(int64 n, int startPos)
     }
 }
 
-BigInteger BigInteger::operator +(int n)
+pair<BigInteger, BigInteger> BigInteger::divBig(BigInteger another)
+{
+    BigInteger res(0);
+    BigInteger t;
+    t.number.clear();
+
+    for (int i = another.number.size() - 1; i >= 0; i--) {
+        t.number.push_back(0);
+        t.number[0] = number[i];
+
+        uint16_t left = 0;
+        int64_t right = base - 1;
+        uint64_t x = 0;
+
+        while (left <= right) {
+            int64_t m = (left + right) / 2;
+            BigInteger n = another * m;
+            if (n <= t) {
+                x = m;
+                left = m + 1;
+            } else
+                right = m - 1;
+        }
+
+        res.number[i] = x;
+        t = t - another * x;
+    }
+
+    while (res.number.back() == 0)
+        res.number.pop_back();
+
+    return make_pair(res, t);
+}
+
+BigInteger BigInteger::operator +(int64_t n)
 {
     BigInteger tmpInt = *this;
 
     return tmpInt + BigInteger(n);
 }
 
-void BigInteger::mulShort(int64 n, int startPos)
+void BigInteger::mulShort(int64_t n, int startPos)
 {
     if (n == 0) {
         number.clear();
@@ -159,7 +193,7 @@ void BigInteger::mulShort(int64 n, int startPos)
         number.push_back(carrige);
 }
 
-BigInteger BigInteger::operator *(int n)
+BigInteger BigInteger::operator *(int64_t n)
 {
     BigInteger tmpInt = *this;
     tmpInt.sign *= (n == 0 ? 1 : n / abs(n));
@@ -206,22 +240,63 @@ BigInteger BigInteger::operator -(BigInteger another)
     return tmpInt;
 }
 
-BigInteger BigInteger::operator -(int n)
+BigInteger BigInteger::operator -(int64_t n)
 {
     return (*this) - BigInteger(n);
 }
 
-BigInteger BigInteger::operator /(int n)
+BigInteger BigInteger::operator /(int64_t n)
 {
     auto tmpInt = *this;
     tmpInt.divShort(n);
     return tmpInt;
 }
 
-BigInteger BigInteger::operator %(int n)
+BigInteger BigInteger::operator %(int64_t n)
 {
     auto tmpInt = *this;
     return tmpInt.divShort(n);
+}
+
+BigInteger BigInteger::operator /(BigInteger another)
+{/*
+    BigInteger res(0);
+    BigInteger t;
+    t.number.clear();
+
+    for (int i = another.number.size() - 1; i >= 0; i--) {
+        t.number.push_back(0);
+        t.number[0] = number[i];
+
+        uint16_t left = 0;
+        int64_t right = base - 1;
+        uint64_t x = 0;
+
+        while (left <= right) {
+            int64_t m = (left + right) / 2;
+            BigInteger n = another * m;
+            if (n <= t) {
+                x = m;
+                left = m + 1;
+            } else
+                right = m - 1;
+        }
+
+        res.number[i] = x;
+        t = t - another * x;
+    }
+
+    while (res.number.back() == 0)
+        res.number.pop_back();
+
+    return res;*/
+
+    return divBig(another).first;
+}
+
+BigInteger BigInteger::operator %(BigInteger another)
+{
+    return divBig(another).second;
 }
 
 BigInteger BigInteger::operator--()

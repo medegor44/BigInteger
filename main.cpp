@@ -6,11 +6,5 @@ using namespace std;
 
 int main()
 {
-    BigInteger a, b;
-
-    cin >> a >> b;
-
-    cout << (a > b);
-
     return 0;
 }
